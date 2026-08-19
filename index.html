@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorajima</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body, html {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1a1a1e 0%, #0c0c0e 100%);
+            color: #ffffff;
+            font-family: 'Unbounded', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Летающий логотип sorajima.cc */
+        #dvd-logo {
+            position: absolute;
+            font-family: 'Unbounded', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: 0.1em;
+            user-select: none;
+            pointer-events: none;
+            z-index: 1;
+            padding: 10px 16px;
+            color: #ff3366;
+            transition: color 0.4s ease, filter 0.4s ease;
+            white-space: nowrap;
+        }
+
+        /* Контент в центре (только under construction) */
+        .content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-weight: 300;
+            font-size: 0.9rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Летающий логотип -->
+    <div id="dvd-logo">sorajima.cc</div>
+
+    <!-- Текст в центре -->
+    <div class="content">
+        <div class="subtitle">under construction</div>
+    </div>
+
+    <script>
+        const dvd = document.getElementById('dvd-logo');
+        
+        let x = Math.random() * (window.innerWidth - 220);
+        let y = Math.random() * (window.innerHeight - 90);
+        let dx = 2; // скорость по X
+        let dy = 2; // скорость по Y
+        
+        const colors = [
+            '#ff3366', '#33ccff', '#33ff66', '#ffff33', 
+            '#ff9933', '#cc33ff', '#33ffff', '#ffffff'
+        ];
+        
+        function changeColor() {
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            dvd.style.color = randomColor;
+            dvd.style.filter = `drop-shadow(0 0 15px ${randomColor})`;
+        }
+
+        function update() {
+            x += dx;
+            y += dy;
+
+            let maxX = window.innerWidth - dvd.clientWidth;
+            let maxY = window.innerHeight - dvd.clientHeight;
+
+            let hit = false;
+
+            if (x <= 0 || x >= maxX) {
+                dx = -dx;
+                x = Math.max(0, Math.min(x, maxX));
+                hit = true;
+            }
+            if (y <= 0 || y >= maxY) {
+                dy = -dy;
+                y = Math.max(0, Math.min(y, maxY));
+                hit = true;
+            }
+
+            if (hit) {
+                changeColor();
+            }
+
+            dvd.style.left = x + 'px';
+            dvd.style.top = y + 'px';
+
+            requestAnimationFrame(update);
+        }
+
+        changeColor();
+        update();
+
+        window.addEventListener('resize', () => {
+            x = Math.min(x, window.innerWidth - dvd.clientWidth);
+            y = Math.min(y, window.innerHeight - dvd.clientHeight);
+        });
+    </script>
+</body>
+</html>
