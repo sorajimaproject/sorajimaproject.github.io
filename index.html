@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>sorajima — Ускорение сети</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-start: #12141a;
+      --bg-end: #1a1d26;
+      --text: #ffffff;
+      --text-dim: #8a94a6;
+      --accent: #ffffff;
+      --pink-dot: #ff758f;
+      --border-light: rgba(255, 255, 255, 0.12);
+      --warning-bg: rgba(245, 158, 11, 0.08);
+      --warning-border: rgba(245, 158, 11, 0.2);
+      --warning-text: #fbbf24;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Unbounded', -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #181b24 0%, var(--bg-start) 60%, var(--bg-end) 100%);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      position: relative;
+      padding: 1.5rem 1rem;
+    }
+
+    #network-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .main-container {
+      width: 100%;
+      max-width: 720px;
+      padding: 1rem 0.5rem;
+      z-index: 1;
+      position: relative;
+    }
+
+    .notice-banner {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--warning-text);
+      padding: 0.75rem 1rem;
+      border-radius: 14px;
+      font-size: 0.68rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 2rem;
+      line-height: 1.45;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .brand h1 {
+      font-size: 2.75rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+
+    .brand h1 span {
+      color: var(--pink-dot);
+      text-shadow: 0 0 12px rgba(255, 117, 143, 0.6);
+    }
+
+    .brand p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-top: 0.6rem;
+      line-height: 1.5;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .feature-card {
+      padding: 0.85rem 1rem;
+      border-left: 2px solid var(--accent);
+      text-align: left;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 0 10px 10px 0;
+    }
+
+    .feature-card h3 {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+    }
+
+    .feature-card p {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+
+    .dashboard-card {
+      padding: 1rem 0;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      gap: 0.5rem;
+    }
+
+    .dashboard-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+      flex-shrink: 0;
+    }
+
+    .ping-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-light);
+      padding: 0.3rem 0.6rem;
+      border-radius: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .graph-container {
+      width: 100%;
+      height: 140px;
+      position: relative;
+    }
+
+    #ping-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .metrics-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--border-light);
+      gap: 0.75rem;
+    }
+
+    .metric-item {
+      text-align: center;
+      flex: 1;
+    }
+
+    .metric-label {
+      font-size: 0.58rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-value {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-top: 0.3rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem 0.75rem;
+      }
+      .brand {
+        margin-bottom: 2rem;
+      }
+      .brand h1 {
+        font-size: 2.1rem;
+      }
+      .brand p {
+        font-size: 0.78rem;
+      }
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      .graph-container {
+        height: 110px;
+      }
+      .metrics-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+      }
+      .metric-label {
+        font-size: 0.52rem;
+      }
+      .metric-value {
+        font-size: 0.78rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="network-canvas"></canvas>
+
+  <div class="main-container">
+    <div class="notice-banner">
+      ⚡ Сервис находится в стадии активной разработки. Закрытый приватный доступ.
+    </div>
+
+    <div class="brand">
+      <h1>sorajima<span>.</span></h1>
+      <p>Интеллектуальная маршрутизация и оптимизация сетевых узлов</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3>Smart Tunnel</h3>
+        <p>Автоматический выбор наименьшего RTT</p>
+      </div>
+      <div class="feature-card">
+        <h3>Zero Loss</h3>
+        <p>Компенсация потерь пакетов на магистралях</p>
+      </div>
+      <div class="feature-card">
+        <h3>BBR v3</h3>
+        <p>Продвинутый алгоритм контроля перегрузок</p>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="dashboard-header">
+        <div class="dashboard-title">
+          <span class="status-dot"></span>
+          Мониторинг магистралей
+        </div>
+        <div class="ping-badge" id="livePing">-- ms</div>
+      </div>
+
+      <div class="graph-container">
+        <canvas id="ping-canvas"></canvas>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric-item">
+          <div class="metric-label">Средний пинг</div>
+          <div class="metric-value" id="avgPing">-- ms</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">Потери пакетов</div>
+          <div class="metric-value" style="color: #34d399;" id="lossRate">0.00%</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">Активные ноды</div>
+          <div class="metric-value" id="nodeCount">7 / 7</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const nCanvas = document.getElementById('network-canvas');
+      const nCtx = nCanvas.getContext('2d');
+      const pCanvas = document.getElementById('ping-canvas');
+      const pCtx = pCanvas.getContext('2d');
+
+      const livePingEl = document.getElementById('livePing');
+      const avgPingEl = document.getElementById('avgPing');
+      const lossRateEl = document.getElementById('lossRate');
+      const nodeCountEl = document.getElementById('nodeCount');
+
+      let nw, nh, centerX, centerY, isMobile;
+
+      function resizeCanvas() {
+        nw = nCanvas.width = window.innerWidth;
+        nh = nCanvas.height = window.innerHeight;
+        isMobile = nw <= 600;
+
+        // Позиционирование центра ближе к углам для захвата дугами рабочей области
+        centerX = isMobile ? -nw * 0.05 : -nw * 0.1;
+        centerY = isMobile ? nh * 1.05 : nh * 1.1;
+        
+        if (pCanvas) {
+          pCanvas.width = pCanvas.offsetWidth;
+          pCanvas.height = pCanvas.offsetHeight;
+        }
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      class CircularPacket {
+        constructor() { this.reset(true); }
+        
+        reset(initial = false) {
+          const maxDim = Math.max(nw, nh);
+          const minDim = Math.min(nw, nh);
+
+          if (isMobile) {
+            this.radius = Math.random() * (maxDim * 0.8) + minDim * 0.25;
+            this.lineWidth = Math.random() * 1.8 + 1.6;
+            this.baseOpacity = Math.random() * 0.4 + 0.35;
+          } else {
+            this.radius = Math.random() * (maxDim * 0.95) + minDim * 0.2;
+            this.lineWidth = Math.random() * 1.8 + 1.2;
+            this.baseOpacity = Math.random() * 0.45 + 0.35; // Увеличена яркость для ПК
+          }
+
+          this.startAngle = -Math.PI * 0.35;
+          this.endAngle = Math.PI * 0.7;
+          
+          this.angle = initial 
+            ? this.startAngle + Math.random() * (this.endAngle - this.startAngle)
+            : this.startAngle;
+
+          this.angularSpeed = (Math.random() * 0.0012 + 0.0008);
+          this.arcLength = Math.random() * 0.14 + 0.08;
+          this.isPink = Math.random() < 0.35; // Чуть больше розовых пакетов для баланса
+        }
+
+        update() {
+          this.angle += this.angularSpeed;
+          if (this.angle > this.endAngle) {
+            this.reset(false);
+          }
+        }
+
+        draw() {
+          const totalRange = this.endAngle - this.startAngle;
+          const currentProgress = (this.angle - this.startAngle) / totalRange;
+          
+          let fade = 1;
+          if (currentProgress < 0.15) {
+            fade = currentProgress / 0.15;
+          } else if (currentProgress > 0.85) {
+            fade = (1 - currentProgress) / 0.15;
+          }
+
+          const currentOpacity = Math.max(0, this.baseOpacity * fade);
+          if (currentOpacity <= 0.01) return;
+
+          nCtx.save();
+
+          const startArc = this.angle - this.arcLength;
+          const endArc = this.angle;
+
+          const headX = centerX + Math.cos(endArc) * this.radius;
+          const headY = centerY + Math.sin(endArc) * this.radius;
+          const tailX = centerX + Math.cos(startArc) * this.radius;
+          const tailY = centerY + Math.sin(startArc) * this.radius;
+
+          const rgbColor = this.isPink ? '255, 117, 143' : '255, 255, 255';
+          const hexColor = this.isPink ? '#ff758f' : '#ffffff';
+
+          const gradient = nCtx.createLinearGradient(tailX, tailY, headX, headY);
+          gradient.addColorStop(0, `rgba(${rgbColor}, 0)`);
+          gradient.addColorStop(0.7, `rgba(${rgbColor}, ${currentOpacity * 0.35})`);
+          gradient.addColorStop(1, `rgba(${rgbColor}, ${currentOpacity})`);
+
+          nCtx.beginPath();
+          nCtx.arc(centerX, centerY, this.radius, startArc, endArc);
+          nCtx.strokeStyle = gradient;
+          nCtx.lineWidth = this.lineWidth;
+          nCtx.stroke();
+
+          nCtx.fillStyle = hexColor;
+          nCtx.globalAlpha = fade;
+          nCtx.shadowColor = hexColor;
+          nCtx.shadowBlur = isMobile ? (this.isPink ? 12 : 8) : (this.isPink ? 14 : 8);
+          nCtx.beginPath();
+          nCtx.arc(headX, headY, this.lineWidth * (isMobile ? 1.3 : 1.2), 0, Math.PI * 2);
+          nCtx.fill();
+
+          nCtx.restore();
+        }
+      }
+
+      const packets = Array.from({ length: 45 }, () => new CircularPacket());
+
+      let pulseAngle = 0;
+      function drawCenterGlow() {
+        pulseAngle += 0.015;
+        const pulseFactor = Math.sin(pulseAngle) * 0.5 + 0.5;
+        
+        // Расчет радиуса и прозрачности разделен для мобилок и ПК
+        const glowRadius = isMobile 
+          ? Math.max(nw, nh) * 0.55 + pulseFactor * 20
+          : Math.min(nw, nh) * 0.85 + pulseFactor * 30;
+
+        const glowOpacity = isMobile 
+          ? 0.18 + pulseFactor * 0.06 
+          : 0.28 + pulseFactor * 0.08; // Усиленная прозрачность под ПК
+
+        nCtx.save();
+        const glow = nCtx.createRadialGradient(centerX, centerY, 0, centerX, centerY, glowRadius);
+        glow.addColorStop(0, `rgba(255, 117, 143, ${glowOpacity})`);
+        glow.addColorStop(0.4, `rgba(255, 117, 143, ${glowOpacity * 0.45})`);
+        glow.addColorStop(1, 'rgba(255, 117, 143, 0)');
+
+        nCtx.fillStyle = glow;
+        nCtx.beginPath();
+        nCtx.arc(centerX, centerY, glowRadius, 0, Math.PI * 2);
+        nCtx.fill();
+        nCtx.restore();
+      }
+
+      const dataPoints = Array(30).fill(20);
+
+      function drawGraph() {
+        if (!pCanvas.width || !pCanvas.height) return;
+        
+        pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+        
+        const w = pCanvas.width;
+        const h = pCanvas.height;
+        const step = w / (dataPoints.length - 1);
+
+        pCtx.beginPath();
+        pCtx.moveTo(0, h);
+
+        for (let i = 0; i < dataPoints.length; i++) {
+          const val = dataPoints[i];
+          const y = h - ((val - 10) / 25) * h;
+          const x = i * step;
+
+          if (i === 0) {
+            pCtx.lineTo(x, y);
+          } else {
+            const prevX = (i - 1) * step;
+            const prevY = h - ((dataPoints[i - 1] - 10) / 25) * h;
+            const cx = (prevX + x) / 2;
+            pCtx.bezierCurveTo(cx, prevY, cx, y, x, y);
+          }
+        }
+
+        const gradient = pCtx.createLinearGradient(0, 0, 0, h);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+
+        pCtx.lineTo(w, h);
+        pCtx.closePath();
+        pCtx.fillStyle = gradient;
+        pCtx.fill();
+
+        pCtx.beginPath();
+        for (let i = 0; i < dataPoints.length; i++) {
+          const val = dataPoints[i];
+          const y = h - ((val - 10) / 25) * h;
+          const x = i * step;
+
+          if (i === 0) {
+            pCtx.moveTo(x, y);
+          } else {
+            const prevX = (i - 1) * step;
+            const prevY = h - ((dataPoints[i - 1] - 10) / 25) * h;
+            const cx = (prevX + x) / 2;
+            pCtx.bezierCurveTo(cx, prevY, cx, y, x, y);
+          }
+        }
+        pCtx.strokeStyle = '#ffffff';
+        pCtx.lineWidth = 2;
+        pCtx.shadowColor = 'rgba(255, 255, 255, 0.4)';
+        pCtx.shadowBlur = 8;
+        pCtx.stroke();
+        pCtx.shadowBlur = 0;
+      }
+
+      function render() {
+        nCtx.clearRect(0, 0, nw, nh);
+        drawCenterGlow();
+        packets.forEach(p => { p.update(); p.draw(); });
+
+        drawGraph();
+
+        requestAnimationFrame(render);
+      }
+
+      render();
+
+      const LiveBackend = {
+        basePing: 18,
+        nodesTotal: 7,
+        
+        async fetchTelemetry() {
+          return new Promise((resolve) => {
+            const networkDelay = Math.floor(Math.random() * 40) + 20;
+            setTimeout(() => {
+              const noise = (Math.random() - 0.48) * 3.5;
+              const currentPing = Math.round(Math.max(14, Math.min(27, this.basePing + noise)));
+              
+              resolve({
+                status: 200,
+                data: {
+                  ping: currentPing,
+                  loss: 0.00,
+                  activeNodes: this.nodesTotal,
+                  totalNodes: this.nodesTotal
+                }
+              });
+            }, networkDelay);
+          });
+        },
+
+        startStream(callback) {
+          const poll = async () => {
+            const res = await this.fetchTelemetry();
+            if (res.status === 200) {
+              callback(res.data);
+            }
+            setTimeout(poll, 800 + Math.random() * 200);
+          };
+          poll();
+        }
+      };
+
+      LiveBackend.startStream((metrics) => {
+        dataPoints.shift();
+        dataPoints.push(metrics.ping);
+
+        const sum = dataPoints.reduce((acc, val) => acc + val, 0);
+        const avg = (sum / dataPoints.length).toFixed(1);
+
+        if (livePingEl) livePingEl.innerText = `${metrics.ping} ms`;
+        if (avgPingEl) avgPingEl.innerText = `${avg} ms`;
+        if (lossRateEl) lossRateEl.innerText = `${metrics.loss.toFixed(2)}%`;
+        if (nodeCountEl) nodeCountEl.innerText = `${metrics.activeNodes} / ${metrics.totalNodes}`;
+      });
+    });
+  </script>
+</body>
+</html>
