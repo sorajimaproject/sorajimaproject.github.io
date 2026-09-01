@@ -42,6 +42,11 @@
       padding: 1.5rem 1rem;
     }
 
+    canvas {
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
+
     #network-canvas {
       position: fixed;
       top: 0;
@@ -316,20 +321,32 @@
       const lossRateEl = document.getElementById('lossRate');
       const nodeCountEl = document.getElementById('nodeCount');
 
-      let nw, nh, centerX, centerY, isMobile;
+      let nw, nh, centerX, centerY, isMobile, dpr;
+
+      function setupCanvas(canvas, ctx, width, height) {
+        dpr = Math.min(window.devicePixelRatio || 1, 3); // Ограничиваем DPR до 3x для производительности
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.resetTransform();
+        ctx.scale(dpr, dpr);
+      }
 
       function resizeCanvas() {
-        nw = nCanvas.width = window.innerWidth;
-        nh = nCanvas.height = window.innerHeight;
-        isMobile = nw <= 600;
+        const winW = window.innerWidth;
+        const winH = window.innerHeight;
+        isMobile = winW <= 600;
 
-        // Позиционирование центра ближе к углам для захвата дугами рабочей области
+        nw = winW;
+        nh = winH;
+        setupCanvas(nCanvas, nCtx, nw, nh);
+
         centerX = isMobile ? -nw * 0.05 : -nw * 0.1;
         centerY = isMobile ? nh * 1.05 : nh * 1.1;
         
         if (pCanvas) {
-          pCanvas.width = pCanvas.offsetWidth;
-          pCanvas.height = pCanvas.offsetHeight;
+          const pw = pCanvas.offsetWidth;
+          const ph = pCanvas.offsetHeight;
+          setupCanvas(pCanvas, pCtx, pw, ph);
         }
       }
 
@@ -345,12 +362,12 @@
 
           if (isMobile) {
             this.radius = Math.random() * (maxDim * 0.8) + minDim * 0.25;
-            this.lineWidth = Math.random() * 1.8 + 1.6;
+            this.lineWidth = Math.random() * 1.5 + 1.2;
             this.baseOpacity = Math.random() * 0.4 + 0.35;
           } else {
             this.radius = Math.random() * (maxDim * 0.95) + minDim * 0.2;
             this.lineWidth = Math.random() * 1.8 + 1.2;
-            this.baseOpacity = Math.random() * 0.45 + 0.35; // Увеличена яркость для ПК
+            this.baseOpacity = Math.random() * 0.45 + 0.35;
           }
 
           this.startAngle = -Math.PI * 0.35;
@@ -362,7 +379,7 @@
 
           this.angularSpeed = (Math.random() * 0.0012 + 0.0008);
           this.arcLength = Math.random() * 0.14 + 0.08;
-          this.isPink = Math.random() < 0.35; // Чуть больше розовых пакетов для баланса
+          this.isPink = Math.random() < 0.35;
         }
 
         update() {
@@ -413,9 +430,9 @@
           nCtx.fillStyle = hexColor;
           nCtx.globalAlpha = fade;
           nCtx.shadowColor = hexColor;
-          nCtx.shadowBlur = isMobile ? (this.isPink ? 12 : 8) : (this.isPink ? 14 : 8);
+          nCtx.shadowBlur = isMobile ? (this.isPink ? 8 : 4) : (this.isPink ? 14 : 8);
           nCtx.beginPath();
-          nCtx.arc(headX, headY, this.lineWidth * (isMobile ? 1.3 : 1.2), 0, Math.PI * 2);
+          nCtx.arc(headX, headY, this.lineWidth * (isMobile ? 1.2 : 1.2), 0, Math.PI * 2);
           nCtx.fill();
 
           nCtx.restore();
@@ -429,14 +446,13 @@
         pulseAngle += 0.015;
         const pulseFactor = Math.sin(pulseAngle) * 0.5 + 0.5;
         
-        // Расчет радиуса и прозрачности разделен для мобилок и ПК
         const glowRadius = isMobile 
           ? Math.max(nw, nh) * 0.55 + pulseFactor * 20
           : Math.min(nw, nh) * 0.85 + pulseFactor * 30;
 
         const glowOpacity = isMobile 
           ? 0.18 + pulseFactor * 0.06 
-          : 0.28 + pulseFactor * 0.08; // Усиленная прозрачность под ПК
+          : 0.28 + pulseFactor * 0.08;
 
         nCtx.save();
         const glow = nCtx.createRadialGradient(centerX, centerY, 0, centerX, centerY, glowRadius);
@@ -454,37 +470,37 @@
       const dataPoints = Array(30).fill(20);
 
       function drawGraph() {
-        if (!pCanvas.width || !pCanvas.height) return;
+        const pw = pCanvas.offsetWidth;
+        const ph = pCanvas.offsetHeight;
+        if (!pw || !ph) return;
         
-        pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+        pCtx.clearRect(0, 0, pw, ph);
         
-        const w = pCanvas.width;
-        const h = pCanvas.height;
-        const step = w / (dataPoints.length - 1);
+        const step = pw / (dataPoints.length - 1);
 
         pCtx.beginPath();
-        pCtx.moveTo(0, h);
+        pCtx.moveTo(0, ph);
 
         for (let i = 0; i < dataPoints.length; i++) {
           const val = dataPoints[i];
-          const y = h - ((val - 10) / 25) * h;
+          const y = ph - ((val - 10) / 25) * ph;
           const x = i * step;
 
           if (i === 0) {
             pCtx.lineTo(x, y);
           } else {
             const prevX = (i - 1) * step;
-            const prevY = h - ((dataPoints[i - 1] - 10) / 25) * h;
+            const prevY = ph - ((dataPoints[i - 1] - 10) / 25) * ph;
             const cx = (prevX + x) / 2;
             pCtx.bezierCurveTo(cx, prevY, cx, y, x, y);
           }
         }
 
-        const gradient = pCtx.createLinearGradient(0, 0, 0, h);
+        const gradient = pCtx.createLinearGradient(0, 0, 0, ph);
         gradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
         gradient.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
 
-        pCtx.lineTo(w, h);
+        pCtx.lineTo(pw, ph);
         pCtx.closePath();
         pCtx.fillStyle = gradient;
         pCtx.fill();
@@ -492,14 +508,14 @@
         pCtx.beginPath();
         for (let i = 0; i < dataPoints.length; i++) {
           const val = dataPoints[i];
-          const y = h - ((val - 10) / 25) * h;
+          const y = ph - ((val - 10) / 25) * ph;
           const x = i * step;
 
           if (i === 0) {
             pCtx.moveTo(x, y);
           } else {
             const prevX = (i - 1) * step;
-            const prevY = h - ((dataPoints[i - 1] - 10) / 25) * h;
+            const prevY = ph - ((dataPoints[i - 1] - 10) / 25) * ph;
             const cx = (prevX + x) / 2;
             pCtx.bezierCurveTo(cx, prevY, cx, y, x, y);
           }
@@ -507,7 +523,7 @@
         pCtx.strokeStyle = '#ffffff';
         pCtx.lineWidth = 2;
         pCtx.shadowColor = 'rgba(255, 255, 255, 0.4)';
-        pCtx.shadowBlur = 8;
+        pCtx.shadowBlur = 6;
         pCtx.stroke();
         pCtx.shadowBlur = 0;
       }
