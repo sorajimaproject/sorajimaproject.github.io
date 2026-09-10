@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sorajima. — Ускорение интернета и смарт-маршрутизация</title>
+  <meta name="description" content="Интеллектуальная оптимизация интернет-соединения, устранение потерь пакетов и ультра-быстрый стриминг." />
+  
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <canvas id="sakura-canvas" class="sakura-canvas"></canvas>
+  <div class="ambient-glow"></div>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="#" class="brand">
+        <img src="logo.png" alt="Sorajima Logo" class="brand-logo" />
+        <span class="brand-title">sorajima<span class="brand-dot">.</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#features" class="nav-link">Возможности</a>
+        <a href="#routing" class="nav-link">Маршрутизация</a>
+        <a href="#nodes" class="nav-link">Узлы</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="https://t.me/sorajimarobot" target="_blank" rel="noopener noreferrer" class="btn-nav" data-tg-bot>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .37z"/>
+          </svg>
+          <span>В бота</span>
+        </a>
+
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Меню">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Navigation Drawer -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <a href="#features" class="mobile-nav-link">Возможности</a>
+    <a href="#routing" class="mobile-nav-link">Маршрутизация</a>
+    <a href="#nodes" class="mobile-nav-link">Узлы</a>
+    <a href="#faq" class="mobile-nav-link">FAQ</a>
+    <a href="https://t.me/sorajimarobot" target="_blank" rel="noopener noreferrer" class="btn-primary mobile-btn-nav" data-tg-bot>
+      Перейти в бота
+    </a>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1 class="hero-title">
+        Интернет на <span class="hero-title-highlight">предельной скорости</span> твоего провайдера*.
+      </h1>
+
+      <p class="hero-description">
+        sorajima. перенаправляет ваш трафик по защищенным скоростным магистралям. 
+        Мгновенный 4K/8K стриминг*, высокая стабильность и надежная передача данных без потерь пакетов*.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="https://t.me/sorajimarobot" target="_blank" rel="noopener noreferrer" class="btn-primary" data-tg-bot>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .37z"/>
+          </svg>
+          <span>Перейти в бота для покупки</span>
+        </a>
+        <a href="#routing" class="btn-secondary">
+          <span>Как это работает</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value">10 <span class="metric-value-accent">Гбит/с*</span></div>
+          <div class="metric-label">Пропускная способность магистралей*</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">99.98<span class="metric-value-accent">%*</span></div>
+          <div class="metric-label">Аптайм и надежность сети узлов*</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">0.00<span class="metric-value-accent">%*</span></div>
+          <div class="metric-label">Потеря пакетов (Zero Packet Loss)*</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">4K / <span class="metric-value-accent">8K*</span></div>
+          <div class="metric-label">Плавный запуск медиапотоков без задержек*</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Route Visualizer Section -->
+  <section class="section" id="routing">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Интеллектуальный BGP</span>
+        <h2 class="section-title">Прямой маршрут решает всё</h2>
+        <p class="section-desc">
+          Обычные провайдеры гонят трафик через перегруженные транзитные узлы. 
+          sorajima. использует прямые экспресс-коридоры с гарантированным приоритетом.
+        </p>
+      </div>
+
+      <div class="visualizer-wrapper">
+        <div class="visualizer-grid">
+          <!-- Standard lane -->
+          <div class="route-lane">
+            <div class="lane-header">
+              <h3 class="lane-title">Маршрут обычного провайдера</h3>
+              <span class="lane-badge badge-bad">Перегружен</span>
+            </div>
+            <div class="route-nodes">
+              <div class="route-node">
+                <span class="node-name"><span class="node-status-dot"></span> Локальный шлюз</span>
+                <span class="node-latency">Стандарт</span>
+              </div>
+              <div class="route-node">
+                <span class="node-name"><span class="node-status-dot"></span> Перегруженный транзит</span>
+                <span class="node-latency" style="color:#ff7675;">Дропы пакетов</span>
+              </div>
+              <div class="route-node">
+                <span class="node-name"><span class="node-status-dot"></span> Промежуточный PoP</span>
+                <span class="node-latency">Задержка стыка</span>
+              </div>
+            </div>
+            <div class="lane-footer">
+              <div>
+                <div class="stat-item-label">Качество канала</div>
+                <div class="stat-item-val" style="color:#ff7675;">Нестабильно</div>
+              </div>
+              <div>
+                <div class="stat-item-label">Потеря пакетов</div>
+                <div class="stat-item-val" style="color:#ff7675;">3.8%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sorajima lane -->
+          <div class="route-lane sorajima-lane">
+            <div class="lane-header">
+              <h3 class="lane-title">Оптимизация sorajima.</h3>
+              <span class="lane-badge badge-good">Экспресс-линия</span>
+            </div>
+            <div class="route-nodes">
+              <div class="route-node">
+                <span class="node-name"><span class="node-status-dot"></span> Входная Anycast-точка</span>
+                <span class="node-latency">Оптимальный вход</span>
+              </div>
+              <div class="route-node">
+                <span class="node-name"><span class="node-status-dot"></span> Прямой 10G оптоволоконный канал</span>
+                <span class="node-latency" style="color:var(--accent-rose);">Прямой 10G линк</span>
+              </div>
+              <div class="route-node">
+                <span class="node-name"><span class="node-status-dot"></span> Целевой сервер назначения</span>
+                <span class="node-latency">Быстрая доставка</span>
+              </div>
+            </div>
+            <div class="lane-footer">
+              <div>
+                <div class="stat-item-label">Качество канала</div>
+                <div class="stat-item-val" style="color:#2ed573;">Максимальное</div>
+              </div>
+              <div>
+                <div class="stat-item-label">Потеря пакетов</div>
+                <div class="stat-item-val" style="color:#2ed573;">0.00%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Преимущества</span>
+        <h2 class="section-title">Максимальный комфорт в сети</h2>
+        <p class="section-desc">
+          Комплексное сетевое решение для геймеров, создателей контента и тех, кто ценит мгновенную отзывчивость сети.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+            </svg>
+          </div>
+          <h3 class="feature-title">Приоритезация трафика (QoS)</h3>
+          <p class="feature-text">
+            Выделенная очередь для критически важных сетевых пакетов. Высокая стабильность соединения без микрообрывов и задержек в реальном времени.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </div>
+          <h3 class="feature-title">Стриминг 4K / 8K без буфера*</h3>
+          <p class="feature-text">
+            Прямое оптоволоконное соединение с крупнейшими CDN медиасерверами. Мгновенная перемотка видео без ожидания загрузки.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+            </svg>
+          </div>
+          <h3 class="feature-title">Умная Anycast-маршрутизация</h3>
+          <p class="feature-text">
+            При перегрузке или сбое линии система автоматически перенаправляет ваш трафик по резервному каналу за миллисекунды.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <h3 class="feature-title">Zero Packet Loss</h3>
+          <p class="feature-text">
+            Аппаратная коррекция сетевых ошибок и оптимизация окон TCP устраняют микрофризы даже при нестабильном домашнем Wi-Fi.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+          </div>
+          <h3 class="feature-title">Работает везде</h3>
+          <p class="feature-text">
+            Быстрое подключение на Windows, macOS, iOS, Android и роутерах. Простая настройка за пару кликов через бота.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+            </svg>
+          </div>
+          <h3 class="feature-title">Инфраструктура 10 Гбит/с*</h3>
+          <p class="feature-text">
+            Современные аппаратные платформы и прямое оптическое подключение для стабильной работы даже в часы пиковых нагрузок.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Nodes Section -->
+  <section class="section" id="nodes">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Инфраструктура</span>
+        <h2 class="section-title">Глобальная сеть узлов*</h2>
+        <p class="section-desc">
+          Собственные серверные кластеры в крупнейших дата-центрах мира уровня Tier III / IV*.
+        </p>
+      </div>
+
+      <div class="nodes-grid">
+        <div class="node-card">
+          <div class="node-info">
+            <span class="node-flag-wrap">
+              <svg viewBox="0 0 28 20" width="28" height="20">
+                <rect width="28" height="6.67" fill="#151515"/>
+                <rect y="6.67" width="28" height="6.67" fill="#D00"/>
+                <rect y="13.34" width="28" height="6.67" fill="#FFCE00"/>
+              </svg>
+            </span>
+            <div>
+              <div class="node-city">Франкфурт</div>
+              <div class="node-country">Германия</div>
+            </div>
+          </div>
+          <div class="node-badge"><span>●</span> Онлайн</div>
+        </div>
+
+        <div class="node-card">
+          <div class="node-info">
+            <span class="node-flag-wrap">
+              <svg viewBox="0 0 28 20" width="28" height="20">
+                <rect width="28" height="6.67" fill="#C8102E"/>
+                <rect y="6.67" width="28" height="6.67" fill="#FFFFFF"/>
+                <rect y="13.34" width="28" height="6.67" fill="#003DA5"/>
+              </svg>
+            </span>
+            <div>
+              <div class="node-city">Амстердам</div>
+              <div class="node-country">Нидерланды</div>
+            </div>
+          </div>
+          <div class="node-badge"><span>●</span> Онлайн</div>
+        </div>
+
+        <div class="node-card">
+          <div class="node-info">
+            <span class="node-flag-wrap">
+              <svg viewBox="0 0 28 20" width="28" height="20">
+                <rect width="28" height="10" fill="#FFFFFF"/>
+                <rect y="10" width="28" height="10" fill="#D7141A"/>
+                <polygon points="0,0 14,10 0,20" fill="#11457E"/>
+              </svg>
+            </span>
+            <div>
+              <div class="node-city">Прага</div>
+              <div class="node-country">Чехия</div>
+            </div>
+          </div>
+          <div class="node-badge"><span>●</span> Онлайн</div>
+        </div>
+
+        <div class="node-card">
+          <div class="node-info">
+            <span class="node-flag-wrap">
+              <svg viewBox="0 0 28 20" width="28" height="20">
+                <rect width="28" height="6.67" fill="#0072CE"/>
+                <rect y="6.67" width="28" height="6.67" fill="#151515"/>
+                <rect y="13.34" width="28" height="6.67" fill="#FFFFFF"/>
+              </svg>
+            </span>
+            <div>
+              <div class="node-city">Таллин</div>
+              <div class="node-country">Эстония</div>
+            </div>
+          </div>
+          <div class="node-badge"><span>●</span> Онлайн</div>
+        </div>
+
+        <div class="node-card">
+          <div class="node-info">
+            <span class="node-flag-wrap">
+              <svg viewBox="0 0 28 20" width="28" height="20">
+                <rect width="28" height="20" fill="#B22234"/>
+                <path d="M0 3.08h28M0 6.15h28M0 9.23h28M0 12.31h28M0 15.38h28M0 18.46h28" stroke="#FFFFFF" stroke-width="1.54"/>
+                <rect width="13" height="10.8" fill="#3C3B6E"/>
+                <circle cx="3" cy="2.8" r="0.85" fill="#FFF"/>
+                <circle cx="6.5" cy="2.8" r="0.85" fill="#FFF"/>
+                <circle cx="10" cy="2.8" r="0.85" fill="#FFF"/>
+                <circle cx="4.75" cy="5.4" r="0.85" fill="#FFF"/>
+                <circle cx="8.25" cy="5.4" r="0.85" fill="#FFF"/>
+                <circle cx="3" cy="8" r="0.85" fill="#FFF"/>
+                <circle cx="6.5" cy="8" r="0.85" fill="#FFF"/>
+                <circle cx="10" cy="8" r="0.85" fill="#FFF"/>
+              </svg>
+            </span>
+            <div>
+              <div class="node-city">Нью-Йорк</div>
+              <div class="node-country">США</div>
+            </div>
+          </div>
+          <div class="node-badge"><span>●</span> Онлайн</div>
+        </div>
+
+        <div class="node-card">
+          <div class="node-info">
+            <span class="node-flag-wrap">
+              <svg viewBox="0 0 28 20" width="28" height="20">
+                <rect width="28" height="20" fill="#006AA7"/>
+                <rect x="8" width="3.5" height="20" fill="#FECC00"/>
+                <rect y="8.25" width="28" height="3.5" fill="#FECC00"/>
+              </svg>
+            </span>
+            <div>
+              <div class="node-city">Стокгольм</div>
+              <div class="node-country">Швеция</div>
+            </div>
+          </div>
+          <div class="node-badge"><span>●</span> Онлайн</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="section" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">FAQ</span>
+        <h2 class="section-title">Часто задаваемые вопросы</h2>
+        <p class="section-desc">Всё, что вам нужно знать перед началом использования sorajima.</p>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Как именно sorajima. ускоряет интернет?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-answer">
+            Трафик перенаправляется по специально арендованным магистральным оптоволоконным линиям в обход перегруженных узлов вашего местного интернет-провайдера. Это гарантирует прямое соединение с зарубежными серверами без лишних промежуточных задержек.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Сложно ли настроить соединение?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-answer">
+            Нет, настройка занимает менее двух минут. Наш Telegram-бот выдаст пошаговую инструкцию и готовый профиль подключения для вашего смартфона, компьютера или домашнего роутера в один клик.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>На каких устройствах работает sorajima.?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-answer">
+            Поддерживаются любые популярные платформы: iOS, Android, Windows, macOS, Linux, а также настройка на домашних роутерах для защиты и ускорения всей домашней сети сразу.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Как происходит оплата и выдача доступа?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-answer">
+            Все операции производятся автоматически через нашего официального Telegram-бота. Поддерживаются банковские карты, СБП и криптовалюта. Доступ активируется моментально после оплаты.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Big Banner CTA -->
+  <div class="container">
+    <div class="cta-banner">
+      <h2 class="cta-banner-title">Ощути интернет без ограничений</h2>
+      <p class="cta-banner-desc">
+        Подключайтесь к скоростной сети sorajima. уже сейчас и наслаждайтесь чистой скоростью без задержек.
+      </p>
+      <a href="https://t.me/sorajimarobot" target="_blank" rel="noopener noreferrer" class="btn-primary" data-tg-bot>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .37z"/>
+        </svg>
+        <span>Подключить в Telegram</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <a href="#" class="brand">
+          <img src="logo.png" alt="Sorajima Logo" class="brand-logo" />
+          <span class="brand-title">sorajima<span class="brand-dot">.</span></span>
+        </a>
+        <p class="footer-disclaimer">
+          Интеллектуальная платформа оптимизации сетевых протоколов и высокоскоростной Anycast-маршрутизации данных.
+        </p>
+      </div>
+      <div class="footer-footnote">
+        <p>
+          * Сервис не гарантирует скорость соединения и сетевую задержку (пинг) ниже фактических физических возможностей вашего интернет-провайдера. Итоговые показатели зависят от характеристик оборудования «последней мили», региона и загруженности линий связи вашего оператора. Доступность отдельных узлов (нод) не гарантируется непрерывно и может временно изменяться в ходе плановых технических работ или перегрузок магистральных направлений.
+        </p>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 sorajima. Все права защищены.</span>
+        <span>Прямые высокоскоростные магистрали 10G</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
